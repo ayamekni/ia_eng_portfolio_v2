@@ -15,17 +15,7 @@ export const Route = createFileRoute("/experience/$slug")({
     if (!exp) throw notFound();
     return exp;
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.role} · ${loaderData.company} — Aya Mekni` },
-          { name: "description", content: loaderData.summary },
-          { property: "og:title", content: `${loaderData.role} · ${loaderData.company}` },
-          { property: "og:description", content: loaderData.summary },
-        ]
-      : [{ title: "Experience — Aya Mekni" }],
-  }),
-  notFoundComponent: () => (
+notFoundComponent: () => (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
       <h1 className="text-3xl font-bold">Experience not found</h1>
       <Link to="/" className="text-cyan-300 hover:underline">
