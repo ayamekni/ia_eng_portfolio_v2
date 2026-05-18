@@ -3,13 +3,11 @@ import react from '@vitejs/plugin-react'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import tailwindcss from '@tailwindcss/vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { cloudflare } from '@cloudflare/vite-plugin'
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   plugins: [
     tailwindcss(),
     tsconfigPaths({ projects: ['./tsconfig.json'] }),
-    ...(command === 'build' ? [cloudflare()] : []),
     tanstackStart({ server: { entry: 'server' } }),
     react(),
   ],
@@ -23,4 +21,4 @@ export default defineConfig(({ command }) => ({
       '@tanstack/query-core',
     ],
   },
-}))
+})
