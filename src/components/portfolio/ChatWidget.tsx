@@ -4,24 +4,33 @@ import remarkGfm from 'remark-gfm';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
 const CHATBOT_API = import.meta.env.VITE_CHATBOT_API_URL as string;
 
-const SUGGESTIONS = [
-  "What does Aya do?",
-  "Show me her best projects",
-  "Is she a fit for an MLOps role?",
-  "How can I contact her?",
-];
-
 export function ChatWidget() {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDot, setShowDot] = useState(true);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setShowTooltip(true), 3000);
+    const t2 = setTimeout(() => setShowTooltip(false), 9000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  const handleOpen = () => {
+    setOpen(v => !v);
+    setShowDot(false);
+    setShowTooltip(false);
+  };
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -68,15 +77,42 @@ export function ChatWidget() {
 
   return (
     <>
+      {/* Tooltip bubble */}
+      <AnimatePresence>
+        {showTooltip && !open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.92 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 right-6 z-50 max-w-[200px] rounded-2xl rounded-br-sm px-4 py-2.5 text-sm font-medium text-white shadow-lg cursor-pointer"
+            style={{ background: 'var(--gradient-accent)' }}
+            onClick={handleOpen}
+          >
+            {t.chat.tooltip}
+            <div className="absolute -bottom-2 right-4 w-3 h-3 rotate-45" style={{ background: 'oklch(0.65 0.22 310)' }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Floating toggle button */}
       <motion.button
         aria-label={open ? 'Close assistant' : 'Open assistant'}
-        onClick={() => setOpen(v => !v)}
+        onClick={handleOpen}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg glow-cyan border border-white/15"
         style={{ background: 'var(--gradient-accent)' }}
-        whileHover={{ scale: 1.06 }}
+        animate={!open ? { y: [0, -6, 0] } : {}}
+        transition={!open ? { duration: 1.8, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' } : {}}
+        whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
+        {/* Notification dot */}
+        {showDot && !open && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-slate-950 flex items-center justify-center">
+            <span className="absolute inline-flex w-full h-full rounded-full bg-red-400 animate-ping opacity-75" />
+            <span className="text-[8px] font-bold text-white leading-none">1</span>
+          </span>
+        )}
         <AnimatePresence mode="wait" initial={false}>
           {open ? (
             <motion.span
@@ -113,8 +149,7 @@ export function ChatWidget() {
             transition={{ duration: 0.22, ease: 'easeOut' }}
             className="fixed bottom-24 right-6 z-50 w-[min(92vw,380px)] h-[min(70vh,560px)] flex flex-col rounded-2xl glass-strong overflow-hidden"
             style={{
-              boxShadow:
-                '0 20px 60px -15px oklch(0.16 0.04 260 / 0.8), var(--shadow-glow)',
+              boxShadow: '0 20px 60px -15px oklch(0.16 0.04 260 / 0.8), var(--shadow-glow)',
             }}
           >
             {/* Header */}
@@ -126,10 +161,10 @@ export function ChatWidget() {
                 <Sparkles className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-foreground">Portfolio Assistant</div>
+                <div className="text-sm font-semibold text-foreground">{t.chat.title}</div>
                 <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Online · Ask about Aya
+                  {t.chat.status}
                 </div>
               </div>
               <button
@@ -148,11 +183,9 @@ export function ChatWidget() {
             >
               {messages.length === 0 && (
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Hi there! Aya is an AI Engineer currently building agentic systems at Roundesk. Ask me about her experience, projects, or how she can contribute to your team.
-                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{t.chat.welcome}</p>
                   <div className="flex flex-wrap gap-2">
-                    {SUGGESTIONS.map(s => (
+                    {t.chat.suggestions.map(s => (
                       <button
                         key={s}
                         onClick={() => send(s)}
@@ -195,25 +228,16 @@ export function ChatWidget() {
               {loading && (
                 <div className="flex justify-start">
                   <div className="flex gap-1 px-3 py-2">
-                    <span
-                      className="w-2 h-2 rounded-full bg-[oklch(0.82_0.16_210)] animate-bounce"
-                      style={{ animationDelay: '0ms' }}
-                    />
-                    <span
-                      className="w-2 h-2 rounded-full bg-[oklch(0.82_0.16_210)] animate-bounce"
-                      style={{ animationDelay: '120ms' }}
-                    />
-                    <span
-                      className="w-2 h-2 rounded-full bg-[oklch(0.82_0.16_210)] animate-bounce"
-                      style={{ animationDelay: '240ms' }}
-                    />
+                    <span className="w-2 h-2 rounded-full bg-[oklch(0.82_0.16_210)] animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 rounded-full bg-[oklch(0.82_0.16_210)] animate-bounce" style={{ animationDelay: '120ms' }} />
+                    <span className="w-2 h-2 rounded-full bg-[oklch(0.82_0.16_210)] animate-bounce" style={{ animationDelay: '240ms' }} />
                   </div>
                 </div>
               )}
 
               {error && (
                 <div className="text-xs text-destructive bg-destructive/10 border border-destructive/30 rounded-lg px-3 py-2">
-                  Something went wrong. Please try again.
+                  {t.chat.error}
                 </div>
               )}
             </div>
@@ -237,7 +261,7 @@ export function ChatWidget() {
                   }
                 }}
                 rows={1}
-                placeholder="Ask anything about Aya…"
+                placeholder={t.chat.placeholder}
                 className="flex-1 resize-none max-h-32 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-[oklch(0.82_0.16_210/0.5)] focus:ring-1 focus:ring-[oklch(0.82_0.16_210/0.3)]"
               />
               <button

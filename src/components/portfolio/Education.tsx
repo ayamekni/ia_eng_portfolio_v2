@@ -1,91 +1,79 @@
-import { GraduationCap, Calendar, MapPin } from "lucide-react";
+import { GraduationCap, Calendar, MapPin, Users } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
-import { StaggerGroup, itemVariants } from "./Reveal";
+import { Reveal } from "./Reveal";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const items = [
-  {
-    period: "Sep 2023 – Jun 2026",
-    title: "National Engineering Diploma — Computer Science (Data Science & AI)",
-    school: "ESPRIM",
-    location: "Monastir, Tunisia",
-    extra: "GPA: 15.12 / 20",
-    courses: [
-      "Machine Learning",
-      "Deep Learning",
-      "Big Data Analytics",
-      "MLOps",
-      "Data Engineering",
-      "NLP",
-      "Computer Vision",
-    ],
-  },
-  {
-    period: "Sep 2021 – Jun 2023",
-    title: "Pre-Engineering Diploma — Preparatory Cycle (Math–Physics–Informatics)",
-    school: "FSM",
-    location: "Monastir, Tunisia",
-    courses: [
-      "Calculus",
-      "Linear Algebra",
-      "Probability & Statistics",
-      "Data Structures",
-      "Algorithms",
-      "Python",
-      "SQL",
-    ],
-  },
+const courses = [
+  "AI Agents", "LLMs", "RAG", "AI Automation", "MLOps",
+  "Machine Learning", "Deep Learning", "Data Mining", "Big Data Analytics",
+  "Natural Language Processing", "Computer Vision",
+  "Algorithms & Data Structures", "Operating Systems", "Database Management Systems",
+  "Cloud Computing", "Distributed Systems", "Software Engineering",
+  "Statistics & Probability", "Linear Algebra", "Optimization Methods",
+  "Web Development",
 ];
 
 export function Education() {
+  const { t } = useLanguage();
+
   return (
     <section id="education" className="relative py-24 px-4">
-      <div className="max-w-6xl mx-auto">
-        <SectionHeading eyebrow="Education" title="My Learning Journey" />
-        <StaggerGroup className="grid md:grid-cols-2 gap-6">
-          {items.map((it) => (
-            <motion.div
-              key={it.title}
-              variants={itemVariants}
-              whileHover={{ y: -4 }}
-              className="glass rounded-2xl p-6 hover:glow-purple transition"
-            >
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-400/30 to-fuchsia-500/30 flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-cyan-300" />
-                </div>
-                <div>
-                  <div className="font-mono text-xs text-cyan-300/80 flex items-center gap-1">
-                    <Calendar className="w-3 h-3" /> {it.period}
-                  </div>
-                  <h3 className="mt-1 font-semibold leading-tight">{it.title}</h3>
-                </div>
+      <div className="max-w-4xl mx-auto">
+        <SectionHeading eyebrow={t.education.eyebrow} title={t.education.title} />
+        <Reveal>
+          <motion.div
+            whileHover={{ y: -4 }}
+            className="glass rounded-2xl p-6 md:p-8 hover:glow-purple transition"
+          >
+            {/* Header */}
+            <div className="flex items-start gap-4 mb-5">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400/30 to-fuchsia-500/30 flex items-center justify-center shrink-0">
+                <GraduationCap className="w-6 h-6 text-cyan-300" />
               </div>
-              <div className="text-sm">
-                <span className="text-gradient font-semibold">{it.school}</span>
-                <span className="text-muted-foreground"> · </span>
-                <span className="text-muted-foreground inline-flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> {it.location}
-                </span>
-              </div>
-              {it.extra && (
-                <div className="mt-2 inline-block font-mono text-xs px-2 py-1 rounded border border-cyan-400/40 text-cyan-300">
-                  {it.extra}
+              <div>
+                <div className="font-mono text-xs text-cyan-300/80 flex items-center gap-1 mb-1">
+                  <Calendar className="w-3 h-3" /> Sep 2021 – 2026
                 </div>
-              )}
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {it.courses.map((c) => (
+                <h3 className="font-semibold text-lg leading-snug">{t.education.degree}</h3>
+              </div>
+            </div>
+
+            {/* School + meta */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-4">
+              <div>
+                <span className="text-gradient font-semibold">ESPRIT</span>
+                <span className="text-muted-foreground text-xs"> — Ecole Supérieure Privée d'Ingénierie et de Technologies</span>
+              </div>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" /> Tunisia
+              </span>
+              <span className="font-mono text-xs px-2 py-0.5 rounded border border-cyan-400/40 text-cyan-300">
+                GPA 15.12 / 20
+              </span>
+              <span className="flex items-center gap-1 font-mono text-xs text-fuchsia-300/80">
+                <Users className="w-3 h-3" /> {t.education.activity}
+              </span>
+            </div>
+
+            {/* Coursework */}
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-300/60 mb-3">
+                {t.education.coursework}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {courses.map((c) => (
                   <span
                     key={c}
-                    className="font-mono text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10 text-muted-foreground"
+                    className="font-mono text-[10px] px-2 py-1 rounded-md bg-white/5 border border-white/10 text-muted-foreground"
                   >
                     {c}
                   </span>
                 ))}
               </div>
-            </motion.div>
-          ))}
-        </StaggerGroup>
+            </div>
+          </motion.div>
+        </Reveal>
       </div>
     </section>
   );

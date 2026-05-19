@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { Github } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type Project = {
   title: string;
-  badge?: string;
   desc: string;
   tags: string[];
   category: string;
@@ -16,7 +16,6 @@ type Project = {
 const projects: Project[] = [
   {
     title: "AdminDoc-X",
-    badge: "Document AI · Academic Project",
     desc: "End-to-end document intelligence platform automating the analysis of administrative documents. Processes unstructured PDFs (invoices, forms, certificates) through a multi-stage AI pipeline — OCR, layout-aware understanding with fine-tuned LayoutLMv3, NER for structured field extraction — and exposes results via a Flask REST API with a React/TypeScript frontend.",
     tags: ["Python", "OCR", "LayoutLMv3", "NER", "Flask", "React", "TypeScript", "Tailwind", "Document AI", "HuggingFace"],
     category: "Document AI & OCR",
@@ -24,7 +23,6 @@ const projects: Project[] = [
   },
   {
     title: "ARIA — Agentic Research & Intelligence Assistant",
-    badge: "🚧 In Development",
     desc: "Multi-agent NL-to-SQL system that translates natural language into automated data analyses. LangGraph orchestrates 5 specialized agents (analyst, SQL, Python, visualization, synthesis) with dual memory (short-term LangGraph state + long-term ChromaDB) — returning executed SQL, Python analyses, interactive Plotly charts, and natural language explanations.",
     tags: ["LangGraph", "LangChain", "FastAPI", "ChromaDB", "PostgreSQL", "Plotly", "Streamlit", "Docker", "Multi-agent", "NL2SQL"],
     category: "MLOps & Data Engineering",
@@ -32,7 +30,6 @@ const projects: Project[] = [
   },
   {
     title: "DATAFLOW — Data Pipeline Orchestration Platform",
-    badge: "🚧 In Development",
     desc: "Production-grade orchestration platform for batch and streaming pipelines — Airflow DAGs on scheduled runs, Spark distributed processing, Kafka real-time ingestion, automated alerting via n8n and Power BI business dashboards.",
     tags: ["Airflow", "Spark", "Kafka", "PostgreSQL", "Azure", "Power BI", "MLflow", "Docker", "n8n"],
     category: "MLOps & Data Engineering",
@@ -40,7 +37,6 @@ const projects: Project[] = [
   },
   {
     title: "Vision-X — AI Camera Challenge",
-    badge: "GAICA 2025 Winner 🏆",
     desc: "Real-time Computer Vision system built in 24h hackathon. Person detection, multi-object tracking, queue analytics, real-time alerts via Telegram bot. Measures waiting time, service time, congestion, peak hours.",
     tags: ["Python", "YOLOv8", "DeepSORT", "OpenCV", "Telegram Bot API", "Computer Vision"],
     category: "Computer Vision",
@@ -118,10 +114,13 @@ const projects: Project[] = [
   },
 ];
 
-const filters = ["All", "AI/ML", "Computer Vision", "NLP", "Document AI & OCR", "MLOps & Data Engineering", "Web Development", "Data Science"];
+const filterKeys = ["All", "AI/ML", "Computer Vision", "NLP", "Document AI & OCR", "MLOps & Data Engineering", "Web Development", "Data Science"] as const;
+type FilterKey = typeof filterKeys[number];
 
 export function Projects() {
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState<FilterKey>("All");
+  const { t } = useLanguage();
+
   const list = useMemo(
     () => (filter === "All" ? projects : projects.filter((p) => p.category === filter)),
     [filter],
@@ -130,9 +129,9 @@ export function Projects() {
   return (
     <section id="projects" className="relative py-24 px-4">
       <div className="max-w-6xl mx-auto">
-        <SectionHeading eyebrow="Projects" title="Portfolio of Work" />
+        <SectionHeading eyebrow={t.projects.eyebrow} title={t.projects.title} />
         <Reveal className="flex flex-wrap justify-center gap-2 mb-10">
-          {filters.map((f) => (
+          {filterKeys.map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
@@ -142,7 +141,7 @@ export function Projects() {
                   : "border border-white/10 text-muted-foreground hover:text-foreground hover:border-cyan-400/40"
               }`}
             >
-              {f}
+              {t.projects.filters[f]}
             </button>
           ))}
         </Reveal>
@@ -200,15 +199,15 @@ function ProjectCard({ p }: { p: Project }) {
           <Github className="w-4 h-4" />
         </a>
       )}
-<h3 className="font-semibold text-lg leading-snug">{p.title}</h3>
+      <h3 className="font-semibold text-lg leading-snug">{p.title}</h3>
       <div className="font-mono text-[10px] uppercase tracking-widest text-cyan-300/80 mt-1">
         {p.category}
       </div>
       <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{p.desc}</p>
       <div className="mt-4 flex flex-wrap gap-1.5">
-        {p.tags.map((t) => (
-          <span key={t} className="font-mono text-[10px] px-2 py-1 rounded-md bg-white/5 border border-white/10 text-foreground/80">
-            {t}
+        {p.tags.map((tag) => (
+          <span key={tag} className="font-mono text-[10px] px-2 py-1 rounded-md bg-white/5 border border-white/10 text-foreground/80">
+            {tag}
           </span>
         ))}
       </div>

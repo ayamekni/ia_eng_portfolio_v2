@@ -2,9 +2,9 @@ import { Award } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { StaggerGroup, itemVariants } from "./Reveal";
 import { motion } from "framer-motion";
-import ceremonyImg from "@/assets/ceremony.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const groups: { issuer: string; color: string; items: { name: string; date: string }[] }[] = [
+const groups: { issuer: string; color: string; items: { name: string; date: string; inProgress?: boolean }[] }[] = [
   {
     issuer: "NVIDIA",
     color: "from-emerald-400 to-cyan-400",
@@ -32,7 +32,7 @@ const groups: { issuer: string; color: string; items: { name: string; date: stri
       { name: "Working with Llama 3", date: "Aug 2025" },
       { name: "Understanding Cloud Computing", date: "Oct 2025" },
       { name: "Introduction to Power BI", date: "May 2025" },
-      { name: "AWS Cloud Practitioner Track", date: "In Progress" },
+      { name: "AWS Cloud Practitioner Track", date: "", inProgress: true },
     ],
   },
   {
@@ -53,10 +53,12 @@ const groups: { issuer: string; color: string; items: { name: string; date: stri
 ];
 
 export function Certifications() {
+  const { t } = useLanguage();
+
   return (
     <section id="certifications" className="relative py-24 px-4">
       <div className="max-w-6xl mx-auto">
-        <SectionHeading eyebrow="Certifications" title="Proud Milestones" />
+        <SectionHeading eyebrow={t.certifications.eyebrow} title={t.certifications.title} />
         <StaggerGroup className="space-y-8">
           {groups.map((g) => (
             <motion.div key={g.issuer} variants={itemVariants}>
@@ -70,7 +72,9 @@ export function Certifications() {
                 {g.items.map((c) => (
                   <div key={c.name} className="glass rounded-xl p-4 hover:glow-cyan transition">
                     <div className="text-sm font-medium leading-snug">{c.name}</div>
-                    <div className="font-mono text-xs text-cyan-300/80 mt-1">{c.date}</div>
+                    <div className="font-mono text-xs text-cyan-300/80 mt-1">
+                      {c.inProgress ? t.certifications.inProgress : c.date}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -80,7 +84,7 @@ export function Certifications() {
 
         {/* Distinctions */}
         <div id="distinctions" className="mt-20">
-          <SectionHeading eyebrow="Distinctions" title="Achievements" />
+          <SectionHeading eyebrow={t.certifications.distinctions.eyebrow} title={t.certifications.distinctions.title} />
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -109,14 +113,14 @@ export function Certifications() {
                     <Award className="w-7 h-7 text-slate-950" />
                   </div>
                   <div>
-                    <div className="font-mono text-xs text-amber-300 uppercase tracking-widest">Winner</div>
+                    <div className="font-mono text-xs text-amber-300 uppercase tracking-widest">
+                      {t.certifications.distinctions.winner}
+                    </div>
                     <h3 className="text-2xl font-bold mt-1">AI Camera Challenge Hackathon</h3>
                     <div className="text-sm text-muted-foreground mt-1">Global AI Conference (GAICA) 2025</div>
-                    <p className="mt-3 text-muted-foreground">
-                      Real-time computer vision system with an automated alerting pipeline on NVIDIA GPU infrastructure, built in 24 hours.
-                    </p>
+                    <p className="mt-3 text-muted-foreground">{t.certifications.distinctions.desc}</p>
                     <div className="mt-4 font-mono text-[10px] uppercase tracking-widest text-amber-300/70">
-                      Hover to see the ceremony
+                      {t.certifications.distinctions.hoverHint}
                     </div>
                   </div>
                 </div>
@@ -134,7 +138,7 @@ export function Certifications() {
                 }}
               >
                 <img
-                  src={ceremonyImg}
+                  src="/hackathon.jpg"
                   alt="GAICA 2025 award ceremony"
                   width={1024}
                   height={768}
@@ -143,10 +147,12 @@ export function Certifications() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent" />
                 <div className="relative h-full min-h-[260px] flex flex-col justify-end p-8">
-                  <div className="font-mono text-xs text-amber-300 uppercase tracking-widest">Ceremony</div>
+                  <div className="font-mono text-xs text-amber-300 uppercase tracking-widest">
+                    {t.certifications.distinctions.ceremony}
+                  </div>
                   <h3 className="text-xl font-bold mt-1">GAICA 2025 · Award Night</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    On stage receiving the AI Camera Challenge trophy.
+                    {t.certifications.distinctions.caption}
                   </p>
                 </div>
               </div>

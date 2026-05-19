@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Download, Github, Linkedin, Globe } from "lucide-react";
 import { Counter } from "./Counter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ROLES = [
   "AI Engineer",
@@ -39,8 +40,17 @@ function useTypewriter() {
   return text;
 }
 
+const counters = [
+  { v: 5, s: "+", key: 0 },
+  { v: 15, s: "+", key: 1 },
+  { v: 3, s: "+", key: 2 },
+  { v: 200, s: "+", key: 3 },
+];
+
 export function Hero() {
   const role = useTypewriter();
+  const { t } = useLanguage();
+
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-32 pb-20 px-4">
       <div className="max-w-6xl mx-auto w-full">
@@ -74,7 +84,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-6 max-w-2xl text-lg text-muted-foreground"
         >
-          Building Intelligent Systems · LLMs · RAG · AI Agents · MLOps
+          {t.hero.tagline}
         </motion.p>
 
         <motion.div
@@ -83,17 +93,14 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.7 }}
           className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl"
         >
-          {[
-            { v: 5, s: "+", l: "Roles & Projects" },
-            { v: 15, s: "+", l: "Technologies" },
-            { v: 3, s: "+", l: "Years Building" },
-            { v: 200, s: "+", l: "Enterprise Partners" },
-          ].map((m) => (
-            <div key={m.l} className="glass rounded-xl p-4">
+          {counters.map((m) => (
+            <div key={m.key} className="glass rounded-xl p-4">
               <div className="text-3xl md:text-4xl font-bold text-gradient">
                 <Counter value={m.v} suffix={m.s} />
               </div>
-              <div className="text-xs text-muted-foreground mt-1">{m.l}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {t.hero.counters[m.key].label}
+              </div>
             </div>
           ))}
         </motion.div>
@@ -105,16 +112,17 @@ export function Hero() {
           className="mt-10 flex flex-wrap items-center gap-4"
         >
           <a
-            href="#projects"
+            href="/#projects"
             className="inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-slate-950 hover:opacity-90 transition glow-cyan"
           >
-            View My Work <ArrowRight className="w-4 h-4" />
+            {t.hero.viewWork} <ArrowRight className="w-4 h-4" />
           </a>
           <a
-            href="#"
+            href="/Aya_Mekni_CV_.pdf"
+            download="Aya_Mekni_CV.pdf"
             className="inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-medium border-gradient hover:opacity-90 transition"
           >
-            <Download className="w-4 h-4" /> Download CV
+            <Download className="w-4 h-4" /> {t.hero.downloadCV}
           </a>
           <div className="flex items-center gap-3 ml-2">
             <a aria-label="LinkedIn" href="https://linkedin.com/in/aya-mekni" className="p-2 rounded-full glass hover:glow-cyan transition">

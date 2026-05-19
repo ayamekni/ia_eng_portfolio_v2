@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Bot,
   Brain,
@@ -154,18 +155,22 @@ function TagCluster({ items }: { items: string[] }) {
   );
 }
 
-function CategoryPanel({ category }: { category: Category }) {
+function CategoryPanel({ category, translatedTitle, translatedGroups }: {
+  category: Category;
+  translatedTitle: string;
+  translatedGroups: { label?: string }[];
+}) {
   return (
     <div className="glass rounded-2xl p-6 md:p-8">
       <h3 className="text-xl md:text-2xl font-semibold text-gradient mb-6">
-        {category.title}
+        {translatedTitle}
       </h3>
       <div className="space-y-6">
         {category.groups.map((g, i) => (
           <div key={i}>
             {g.label && (
               <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-cyan-300/70 mb-2">
-                {g.label}
+                {translatedGroups[i]?.label ?? g.label}
               </div>
             )}
             <TagCluster items={g.items} />
@@ -178,19 +183,20 @@ function CategoryPanel({ category }: { category: Category }) {
 
 export function Skills() {
   const [active, setActive] = useState(categories[0].id);
+  const { t } = useLanguage();
+
   const activeCat = categories.find((c) => c.id === active)!;
+  const activeCatIdx = categories.findIndex((c) => c.id === active);
+  const translatedActive = t.skills.categories[activeCatIdx];
 
   return (
     <section id="skills" className="relative py-24 px-4">
       <div className="max-w-6xl mx-auto">
-        <SectionHeading
-          eyebrow="Technical Skills"
-          title="Technologies & Tools I Work With"
-        />
+        <SectionHeading eyebrow={t.skills.eyebrow} title={t.skills.title} />
 
         {/* Mobile: 2x5 icon grid */}
         <div className="md:hidden grid grid-cols-2 gap-2 mb-6">
-          {categories.map((c) => {
+          {categories.map((c, i) => {
             const isActive = c.id === active;
             const Icon = c.icon;
             return (
@@ -199,22 +205,16 @@ export function Skills() {
                 onClick={() => setActive(c.id)}
                 className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-left text-xs font-medium transition"
                 style={{
-                  background: isActive
-                    ? "rgba(0,212,255,0.08)"
-                    : "rgba(255,255,255,0.03)",
-                  borderLeft: isActive
-                    ? "3px solid #00d4ff"
-                    : "3px solid transparent",
+                  background: isActive ? "rgba(0,212,255,0.08)" : "rgba(255,255,255,0.03)",
+                  borderLeft: isActive ? "3px solid #00d4ff" : "3px solid transparent",
                 }}
               >
                 <Icon
                   className="h-4 w-4 shrink-0"
                   style={{ color: isActive ? "#00d4ff" : "rgba(100,255,218,0.5)" }}
                 />
-                <span
-                  className={isActive ? "text-gradient font-semibold" : "text-muted-foreground"}
-                >
-                  {c.title}
+                <span className={isActive ? "text-gradient font-semibold" : "text-muted-foreground"}>
+                  {t.skills.categories[i].title}
                 </span>
               </button>
             );
@@ -231,7 +231,7 @@ export function Skills() {
               borderRight: "1px solid rgba(100,255,218,0.12)",
             }}
           >
-            {categories.map((c) => {
+            {categories.map((c, i) => {
               const isActive = c.id === active;
               const Icon = c.icon;
               return (
@@ -240,12 +240,8 @@ export function Skills() {
                   onClick={() => setActive(c.id)}
                   className="group flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium transition-all"
                   style={{
-                    background: isActive
-                      ? "rgba(0,212,255,0.08)"
-                      : "transparent",
-                    borderLeft: isActive
-                      ? "3px solid #00d4ff"
-                      : "3px solid transparent",
+                    background: isActive ? "rgba(0,212,255,0.08)" : "transparent",
+                    borderLeft: isActive ? "3px solid #00d4ff" : "3px solid transparent",
                   }}
                 >
                   <Icon
@@ -259,7 +255,7 @@ export function Skills() {
                         : "text-muted-foreground group-hover:text-foreground transition"
                     }
                   >
-                    {c.title}
+                    {t.skills.categories[i].title}
                   </span>
                 </button>
               );
@@ -275,7 +271,11 @@ export function Skills() {
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
-              <CategoryPanel category={activeCat} />
+              <CategoryPanel
+                category={activeCat}
+                translatedTitle={translatedActive.title}
+                translatedGroups={translatedActive.groups}
+              />
             </motion.div>
           </AnimatePresence>
         </div>

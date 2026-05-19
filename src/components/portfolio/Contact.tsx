@@ -1,30 +1,31 @@
-import { Mail, Linkedin, Github, Globe, MapPin, Download } from "lucide-react";
+import { Mail, Linkedin, Github, MapPin, Download } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const cards = [
   { icon: Mail, label: "aya.mekni@esprim.tn", href: "mailto:aya.mekni@esprim.tn" },
   { icon: Linkedin, label: "linkedin.com/in/aya-mekni", href: "https://linkedin.com/in/aya-mekni" },
   { icon: Github, label: "github.com/ayamekni", href: "https://github.com/ayamekni" },
-  { icon: Globe, label: "aya-mekni-portfolio.vercel.app", href: "https://aya-mekni-portfolio.vercel.app" },
   { icon: MapPin, label: "Monastir, Tunisia · Open to relocation (Europe)", href: "#" },
 ];
 
 export function Contact() {
+  const { t } = useLanguage();
+
   return (
     <section id="contact" className="relative py-24 px-4">
       <div className="max-w-6xl mx-auto">
-        <SectionHeading eyebrow="Get In Touch" title="Let's Connect" />
+        <SectionHeading eyebrow={t.contact.eyebrow} title={t.contact.title} />
         <div className="grid lg:grid-cols-2 gap-10 items-start">
           <Reveal>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              I'm actively looking for full-time AI Engineer roles across Europe. Whether you have a project in mind, want to collaborate, or just want to say hi — my inbox is open.
-            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">{t.contact.bio}</p>
             <a
-              href="#"
+              href="/Aya_Mekni_CV_.pdf"
+              download="Aya_Mekni_CV.pdf"
               className="mt-8 inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium bg-gradient-to-r from-cyan-400 to-fuchsia-500 text-slate-950 hover:opacity-90 transition glow-cyan"
             >
-              <Download className="w-4 h-4" /> Download CV
+              <Download className="w-4 h-4" /> {t.contact.downloadCV}
             </a>
           </Reveal>
           <Reveal delay={0.15} className="space-y-3">
