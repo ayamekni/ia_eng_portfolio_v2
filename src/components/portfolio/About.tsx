@@ -1,7 +1,8 @@
+import { useRef } from "react";
 import { Mail, MapPin, User, Briefcase, Bot, Hammer, BarChart3, Globe2 } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal, StaggerGroup, itemVariants } from "./Reveal";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { LucideIcon } from "lucide-react";
 
@@ -9,10 +10,30 @@ const traitIcons: LucideIcon[] = [Bot, Hammer, BarChart3, Globe2];
 
 export function About() {
   const { t } = useLanguage();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const blob1Y = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const blob2Y = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
   return (
-    <section id="about" className="relative py-24 px-4">
-      <div className="max-w-6xl mx-auto">
+    <section ref={sectionRef} id="about" className="relative py-24 px-4 overflow-hidden">
+      {/* Parallax background blobs */}
+      <motion.div
+        style={{ y: blob1Y }}
+        className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-cyan-400/5 blur-3xl pointer-events-none"
+        aria-hidden="true"
+      />
+      <motion.div
+        style={{ y: blob2Y }}
+        className="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full bg-fuchsia-500/5 blur-3xl pointer-events-none"
+        aria-hidden="true"
+      />
+
+      <div className="relative max-w-6xl mx-auto">
         <SectionHeading eyebrow={t.about.eyebrow} title={t.about.title} />
         <div className="grid lg:grid-cols-5 gap-8">
           <Reveal className="lg:col-span-2">

@@ -1,5 +1,5 @@
-import { useMemo, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Github } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
@@ -157,15 +157,24 @@ export function Projects() {
 
 function ProjectCard({ p }: { p: Project }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
 
   const onMove = (e: React.MouseEvent) => {
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    setTilt({ rx: -y * 8, ry: x * 8 });
+    mouseX.set((e.clientX - r.left) / r.width - 0.5);
+    mouseY.set((e.clientY - r.top) / r.height - 0.5);
+  };
+
+  const onLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
   };
 
   return (
@@ -173,20 +182,26 @@ function ProjectCard({ p }: { p: Project }) {
       ref={ref}
       layout
       onMouseMove={onMove}
-      onMouseLeave={() => setTilt({ rx: 0, ry: 0 })}
+      onMouseLeave={onLeave}
       style={{
-        transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+        rotateX,
+        rotateY,
+        transformPerspective: 800,
         transformStyle: "preserve-3d",
       }}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5 }}
-      className="group glass rounded-2xl p-5 relative overflow-hidden hover:glow-cyan transition"
+      className="group glass rounded-2xl p-5 relative overflow-hidden hover:glow-cyan transition-shadow"
     >
-      <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition" style={{
-        background: "linear-gradient(135deg, oklch(0.82 0.16 210 / 0.08), oklch(0.65 0.22 310 / 0.08))",
-      }} />
+      {/* Hover gradient overlay */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: "linear-gradient(135deg, oklch(0.82 0.16 210 / 0.1), oklch(0.65 0.22 310 / 0.1))",
+        }}
+      />
       {p.github && (
         <a
           href={p.github}

@@ -5,6 +5,8 @@ import {
   createRootRouteWithContext,
   useRouter,
 } from "@tanstack/react-router";
+import { ScrollProgress } from "@/components/portfolio/ScrollProgress";
+import { CustomCursor } from "@/components/portfolio/CustomCursor";
 
 function NotFoundComponent() {
   return (
@@ -74,6 +76,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <CustomCursor />
+      <ScrollProgress />
       <Outlet />
     </QueryClientProvider>
   );

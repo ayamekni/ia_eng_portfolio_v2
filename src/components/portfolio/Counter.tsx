@@ -4,10 +4,12 @@ import { useInView } from "framer-motion";
 export function Counter({
   value,
   suffix = "",
+  decimals = 0,
   duration = 1600,
 }: {
   value: number;
   suffix?: string;
+  decimals?: number;
   duration?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -21,16 +23,16 @@ export function Counter({
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / duration);
       const eased = 1 - Math.pow(1 - p, 3);
-      setN(Math.round(value * eased));
+      setN(parseFloat((value * eased).toFixed(decimals)));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [inView, value, duration]);
+  }, [inView, value, suffix, decimals, duration]);
 
   return (
     <span ref={ref}>
-      {n}
+      {n.toFixed(decimals)}
       {suffix}
     </span>
   );
